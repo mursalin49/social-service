@@ -49,6 +49,12 @@ dev_dependencies:
   cupertino_icons: ^1.0.8
   animate_do: ^3.3.4
   scrollable_positioned_list: ^0.3.8
+  firebase_core: ^3.13.0
+  firebase_auth: ^5.5.3
+  google_fonts: ^6.2.1
+  fluttertoast: ^8.2.12
+  cloud_firestore: ^5.6.7
+  simple_animations: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

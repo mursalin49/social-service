@@ -20,7 +20,7 @@ class _StartPageState extends State<StartPage> {
     Service('Tailor', 'assets/images/tailor.png'),
     Service('CareTaker', 'assets/images/care.jpg'),
     Service('Driver', 'assets/images/driver.png'),
-    Service('Cook', 'assets/images/cooker.png'),
+    Service('Cooker', 'assets/images/cooker.png'),
   ];
 
   int selectedService = 1;

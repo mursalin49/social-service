@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   ];
 
   List<dynamic> workers = [
-    ['Hridoy', 'Cooker', 'assets/images/hridoy.jpg', 4.8],
+    ['Hridoy', 'Electrician', 'assets/images/hridoy.jpg', 4.8],
     ['Omair', 'Driver', 'assets/images/omair.jpg', 4.6],
     ['Tasnia', 'Tailor', 'assets/images/tasnia.png', 4.4],
   ];
@@ -28,204 +28,229 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: Text(
-            'Dashboard',
-            style: TextStyle(color: Colors.black),
-          ),
-          elevation: 0,
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.notifications_none,
-                color: Colors.grey.shade700,
-                size: 30,
-              ),
-            )
-          ],
-          leading: GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, '/login');
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: CircleAvatar(
-                  backgroundImage: AssetImage('assets/images/nirob.jpg'),
-                ),
-              )),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: const Text(
+          'Dashboard',
+          style: TextStyle(color: Colors.black),
         ),
-        body: SingleChildScrollView(
-            child: Column(children: [
-          FadeInUp(
-              child: Padding(
-            padding: EdgeInsets.only(left: 20.0, top: 10.0, right: 10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Recent',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      'View all',
-                    ))
-              ],
+        elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.notifications_none,
+              color: Colors.grey.shade700,
+              size: 30,
             ),
-          )),
-          FadeInUp(
+          ),
+        ],
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, '/login');
+          },
+          child: const Padding(
+            padding: EdgeInsets.all(10.0),
+            child: CircleAvatar(
+              backgroundImage: AssetImage('assets/images/nirob.jpg'),
+            ),
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            FadeInUp(
               child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.0),
-            child: Container(
-              padding: EdgeInsets.all(20.0),
-              height: 180,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.shade200,
-                    offset: Offset(0, 4),
-                    blurRadius: 10.0,
-                  ),
-                ],
+                padding:
+                    const EdgeInsets.only(left: 20.0, top: 10.0, right: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Recent',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text('View all'),
+                    ),
+                  ],
+                ),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(5.0),
-                        child: Image.asset(
-                          'assets/images/nirob.jpg',
-                          width: 80,
-                        ),
+            ),
+            FadeInUp(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Container(
+                  padding: const EdgeInsets.all(20.0),
+                  height: 180,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.shade200,
+                        offset: const Offset(0, 4),
+                        blurRadius: 10.0,
                       ),
-                      SizedBox(width: 15),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Nirob Hasan",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            "Cleaner",
-                            style: TextStyle(
-                                color: Colors.black.withOpacity(0.7),
-                                fontSize: 18),
-                          ),
-                        ],
-                      )
                     ],
                   ),
-                  SizedBox(height: 20),
-                  Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(15.0)),
-                    child: Center(
-                        child: Text(
-                      'View Profile',
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    )),
-                  )
-                ],
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(5.0),
+                            child: Image.asset(
+                              'assets/images/nirob.jpg',
+                              width: 80,
+                            ),
+                          ),
+                          const SizedBox(width: 15),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Nirob Hasan",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                "Cleaner",
+                                style: TextStyle(
+                                  color: Colors.black.withOpacity(0.7),
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/profile');
+                        },
+                        child: Container(
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'View Profile',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          )),
-          SizedBox(height: 20),
-          FadeInUp(
+            const SizedBox(height: 20),
+            FadeInUp(
               child: Padding(
-            padding: EdgeInsets.only(left: 20.0, right: 10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Categories',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                padding: const EdgeInsets.only(left: 20.0, right: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Categories',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text('View all'),
+                    ),
+                  ],
                 ),
-                TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      'View all',
-                    ))
-              ],
+              ),
             ),
-          )),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            height: 300,
-            child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              height: 300,
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   childAspectRatio: 1.1,
                   crossAxisSpacing: 10.0,
                   mainAxisSpacing: 10.0,
                 ),
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: services.length,
                 itemBuilder: (BuildContext context, int index) {
                   return FadeInUp(
-                      delay: Duration(milliseconds: 500 * index),
-                      child: serviceContainer(services[index].imageURL,
-                          services[index].name, index));
-                }),
-          ),
-          SizedBox(height: 20),
-          FadeInUp(
-              child: Padding(
-            padding: EdgeInsets.only(left: 20.0, right: 10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Top Rated',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      'View all',
-                    ))
-              ],
+                    delay: Duration(milliseconds: 500 * index),
+                    child: serviceContainer(
+                        services[index].imageURL, services[index].name, index),
+                  );
+                },
+              ),
             ),
-          )),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            height: 120,
-            child: ListView.builder(
+            const SizedBox(height: 20),
+            FadeInUp(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Top Rated',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text('View all'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              height: 120,
+              child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: workers.length,
                 itemBuilder: (BuildContext context, int index) {
                   return FadeInUp(
-                      delay: Duration(milliseconds: 500 * index),
-                      child: workerContainer(
-                          workers[index][0],
-                          workers[index][1],
-                          workers[index][2],
-                          workers[index][3]));
-                }),
-          ),
-          SizedBox(height: 150),
-        ])));
+                    delay: Duration(milliseconds: 500 * index),
+                    child: workerContainer(
+                      workers[index][0],
+                      workers[index][1],
+                      workers[index][2],
+                      workers[index][3],
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 150),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget serviceContainer(String image, String name, int index) {
     return GestureDetector(
       child: Container(
-        margin: EdgeInsets.only(right: 20),
-        padding: EdgeInsets.all(10.0),
+        margin: const EdgeInsets.only(right: 20),
+        padding: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
           color: Colors.grey.shade100,
           border: Border.all(
@@ -238,8 +263,8 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(image, height: 45),
-            SizedBox(height: 20),
-            Text(name, style: TextStyle(fontSize: 15))
+            const SizedBox(height: 20),
+            Text(name, style: const TextStyle(fontSize: 15)),
           ],
         ),
       ),
@@ -248,11 +273,20 @@ class _HomePageState extends State<HomePage> {
 
   Widget workerContainer(String name, String job, String image, double rating) {
     return GestureDetector(
+      onTap: () {
+        if (name == 'Hridoy') {
+          Navigator.pushNamed(context, '/hridoy');
+        } else if (name == 'Omair') {
+          Navigator.pushNamed(context, '/omair');
+        } else if (name == 'Tasnia') {
+          Navigator.pushNamed(context, '/tasnia');
+        }
+      },
       child: AspectRatio(
         aspectRatio: 3.5,
         child: Container(
-          margin: EdgeInsets.only(right: 20),
-          padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
+          margin: const EdgeInsets.only(right: 20),
+          padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(
@@ -262,35 +296,33 @@ class _HomePageState extends State<HomePage> {
             borderRadius: BorderRadius.circular(20.0),
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
                 child: Image.asset(image,
                     width: 50, height: 50, fit: BoxFit.cover),
               ),
-              SizedBox(width: 20),
+              const SizedBox(width: 20),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(name,
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 5),
-                  Text(job, style: TextStyle(fontSize: 15))
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 5),
+                  Text(job, style: const TextStyle(fontSize: 15))
                 ],
               ),
-              Spacer(),
+              const Spacer(),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(rating.toString(),
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 5),
-                  Icon(Icons.star, color: Colors.orange, size: 20)
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 5),
+                  const Icon(Icons.star, color: Colors.orange, size: 20)
                 ],
               )
             ],
