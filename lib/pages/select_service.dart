@@ -162,7 +162,7 @@ class _SelectServiceState extends State<SelectService> {
 
                 switch (services[selectedService].name) {
                   case 'Cleaning':
-                    nextPage = const CleaningPage();
+                    nextPage = CleaningPage();
                     break;
                   case 'Driver':
                     nextPage = const DriverPage();
@@ -180,7 +180,7 @@ class _SelectServiceState extends State<SelectService> {
                     nextPage = const CookPage();
                     break;
                   default:
-                    nextPage = const CleaningPage(); // Default fallback
+                    nextPage = CleaningPage(); // Default fallback
                 }
 
                 Navigator.push(

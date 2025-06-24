@@ -1,37 +1,14 @@
-// import 'package:flutter/material.dart';
-// import 'package:firebase_core/firebase_core.dart';
-// import 'auth/login_screen.dart';
-// import 'firebase_options.dart';
-//
-// void main() async {
-//   WidgetsFlutterBinding
-//       .ensureInitialized(); // Make sure widgets are initialized before Firebase
-//   try {
-//     await Firebase.initializeApp(
-//       options: DefaultFirebaseOptions.currentPlatform,
-//     );
-//     print("Firebase Initialized");
-//   } catch (e) {
-//     print("Firebase initialization error: $e");
-//   }
-//   runApp(MyApp());
-// }
-//
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       home: LoginScreen(),
-//       debugShowCheckedModeBanner: false,
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:service/pages/selection_screen.dart';
 import 'package:service/profile/HridoyProfile.dart';
 import 'package:service/profile/OmairProfile.dart';
 import 'package:service/profile/TasniaProfile.dart';
 import 'package:service/profile/profile_page.dart';
+import 'auth/admin_login.dart';
+import 'auth/provider_login.dart';
+import 'auth/user_login_screen.dart';
+import 'dashboard/provider_dashboard.dart';
 import 'firebase_options.dart';
 import 'auth/login_screen.dart';
 
@@ -62,8 +39,13 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: const LoginScreen(),
+      initialRoute: '/role',
       routes: {
+        '/role': (context) => const SelectionScreen(),
+        '/admin_login': (context) => const AdminLoginScreen(),
+        '/user_login': (context) => UserLoginScreen(),
+        '/provider_login': (context) => const ProviderLoginScreen(),
+        '/provider_dashboard': (context) => const ProviderDashboard(),
         '/profile': (context) => const ProfilePage(),
         '/hridoy': (context) => const HridoyProfile(),
         '/omair': (context) => const OmairProfile(),
