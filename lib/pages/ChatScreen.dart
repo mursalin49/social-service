@@ -1,16 +1,155 @@
+// import 'package:flutter/material.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_database/firebase_database.dart';
+//
+// class ChatScreen extends StatefulWidget {
+//   final String receiverId;
+//   final String receiverName;
+//
+//   const ChatScreen({
+//     Key? key,
+//     required this.receiverId,
+//     required this.receiverName,
+//   }) : super(key: key);
+//
+//   @override
+//   State<ChatScreen> createState() => _ChatScreenState();
+// }
+//
+// class _ChatScreenState extends State<ChatScreen> {
+//   final TextEditingController _messageController = TextEditingController();
+//   final FirebaseAuth _auth = FirebaseAuth.instance;
+//   final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
+//
+//   late String chatId;
+//   late String currentUserId;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     currentUserId = _auth.currentUser!.uid;
+//     chatId = currentUserId.compareTo(widget.receiverId) < 0
+//         ? '${currentUserId}_${widget.receiverId}'
+//         : '${widget.receiverId}_${currentUserId}';
+//   }
+//
+//   void sendMessage() async {
+//     String message = _messageController.text.trim();
+//     if (message.isEmpty) return;
+//
+//     final timestamp = DateTime.now().millisecondsSinceEpoch;
+//     final newMsgRef = _dbRef.child('chats').child(chatId).push();
+//
+//     await newMsgRef.set({
+//       'senderId': currentUserId,
+//       'text': message,
+//       'timestamp': timestamp,
+//       'seen': false,
+//     });
+//
+//     _messageController.clear();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Text(widget.receiverName)),
+//       body: Column(
+//         children: [
+//           Expanded(
+//             child: StreamBuilder(
+//               stream: _dbRef
+//                   .child('chats')
+//                   .child(chatId)
+//                   .orderByChild('timestamp')
+//                   .onValue,
+//               builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
+//                 if (!snapshot.hasData ||
+//                     snapshot.data!.snapshot.value == null) {
+//                   return const Center(child: Text('No messages yet'));
+//                 }
+//
+//                 Map<dynamic, dynamic> messagesMap =
+//                     snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+//
+//                 List<Map<dynamic, dynamic>> messagesList = messagesMap.entries
+//                     .map((e) => e.value as Map<dynamic, dynamic>)
+//                     .toList();
+//
+//                 messagesList
+//                     .sort((a, b) => a['timestamp'].compareTo(b['timestamp']));
+//
+//                 return ListView.builder(
+//                   reverse: true,
+//                   itemCount: messagesList.length,
+//                   itemBuilder: (context, index) {
+//                     final msg = messagesList[messagesList.length - 1 - index];
+//                     bool isMe = msg['senderId'] == currentUserId;
+//
+//                     return Align(
+//                       alignment:
+//                           isMe ? Alignment.centerRight : Alignment.centerLeft,
+//                       child: Container(
+//                         margin: const EdgeInsets.symmetric(
+//                             vertical: 4, horizontal: 8),
+//                         padding: const EdgeInsets.all(12),
+//                         decoration: BoxDecoration(
+//                           color:
+//                               isMe ? Colors.blueAccent : Colors.grey.shade300,
+//                           borderRadius: BorderRadius.circular(12),
+//                         ),
+//                         child: Text(
+//                           msg['text'],
+//                           style: TextStyle(
+//                               color: isMe ? Colors.white : Colors.black87),
+//                         ),
+//                       ),
+//                     );
+//                   },
+//                 );
+//               },
+//             ),
+//           ),
+//           Padding(
+//             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+//             child: Row(
+//               children: [
+//                 Expanded(
+//                   child: TextField(
+//                     controller: _messageController,
+//                     decoration: const InputDecoration(
+//                       hintText: "Type a message",
+//                       border: OutlineInputBorder(),
+//                     ),
+//                     onSubmitted: (_) => sendMessage(),
+//                   ),
+//                 ),
+//                 const SizedBox(width: 8),
+//                 IconButton(
+//                   icon: const Icon(Icons.send),
+//                   onPressed: sendMessage,
+//                   color: Colors.blueAccent,
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class ChatScreen extends StatefulWidget {
-  final String chatId;
-  final String userId;
-  final String providerId;
+  final String receiverId;
+  final String receiverName;
 
   const ChatScreen({
     Key? key,
-    required this.chatId,
-    required this.userId,
-    required this.providerId,
+    required this.receiverId,
+    required this.receiverName,
   }) : super(key: key);
 
   @override
@@ -19,20 +158,34 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
 
-  void sendMessage() {
-    final text = _messageController.text.trim();
-    if (text.isEmpty) return;
+  late String chatId;
+  late String currentUserId;
 
-    FirebaseFirestore.instance
-        .collection('chats')
-        .doc(widget.chatId)
-        .collection('messages')
-        .add({
-      'text': text,
-      'senderId': widget.userId,
-      'providerId': widget.providerId,
-      'timestamp': FieldValue.serverTimestamp(),
+  @override
+  void initState() {
+    super.initState();
+    currentUserId = _auth.currentUser!.uid;
+
+    chatId = currentUserId.compareTo(widget.receiverId) < 0
+        ? '${currentUserId}_${widget.receiverId}'
+        : '${widget.receiverId}_${currentUserId}';
+  }
+
+  void sendMessage() async {
+    String message = _messageController.text.trim();
+    if (message.isEmpty) return;
+
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final newMsgRef = _dbRef.child('messages').child(chatId).push();
+
+    await newMsgRef.set({
+      'senderId': currentUserId,
+      'text': message,
+      'timestamp': timestamp,
+      'seen': false,
     });
 
     _messageController.clear();
@@ -41,66 +194,55 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Chat with ${widget.providerId}"),
-        backgroundColor: Colors.green,
-      ),
+      appBar: AppBar(title: Text(widget.receiverName)),
       body: Column(
         children: [
           Expanded(
             child: StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection('chats')
-                  .doc(widget.chatId)
-                  .collection('messages')
-                  .orderBy('timestamp', descending: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData)
-                  return const Center(child: CircularProgressIndicator());
-                final messages = snapshot.data!.docs;
+              stream: _dbRef
+                  .child('messages')
+                  .child(chatId)
+                  .orderByChild('timestamp')
+                  .onValue,
+              builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
+                if (!snapshot.hasData ||
+                    snapshot.data!.snapshot.value == null) {
+                  return const Center(child: Text('No messages yet'));
+                }
+
+                Map<dynamic, dynamic> messagesMap =
+                    snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+
+                List<dynamic> messagesList = messagesMap.entries
+                    .map((e) => e.value as Map<dynamic, dynamic>)
+                    .toList();
+
+                messagesList
+                    .sort((a, b) => a['timestamp'].compareTo(b['timestamp']));
+
                 return ListView.builder(
                   reverse: true,
-                  itemCount: messages.length,
+                  itemCount: messagesList.length,
                   itemBuilder: (context, index) {
-                    final data = messages[index].data() as Map<String, dynamic>;
-                    final isMe = data['senderId'] == widget.userId;
-                    final timestamp =
-                        (data['timestamp'] as Timestamp?)?.toDate();
-                    final timeString = timestamp != null
-                        ? "${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')} ${timestamp.day}-${timestamp.month}-${timestamp.year}"
-                        : "Pending";
+                    final msg = messagesList[messagesList.length - 1 - index];
+                    bool isMe = msg['senderId'] == currentUserId;
+
                     return Align(
                       alignment:
                           isMe ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
                         margin: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                            vertical: 4, horizontal: 8),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: isMe ? Colors.green : Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(10),
+                          color:
+                              isMe ? Colors.blueAccent : Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Column(
-                          crossAxisAlignment: isMe
-                              ? CrossAxisAlignment.end
-                              : CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              data['text'],
-                              style: TextStyle(
-                                color: isMe ? Colors.white : Colors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              timeString,
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: isMe ? Colors.white70 : Colors.black54,
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          msg['text'],
+                          style: TextStyle(
+                              color: isMe ? Colors.white : Colors.black87),
                         ),
                       ),
                     );
@@ -109,22 +251,25 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
-          const Divider(height: 1),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _messageController,
-                    decoration:
-                        const InputDecoration(hintText: 'Type your message...'),
+                    decoration: const InputDecoration(
+                      hintText: "Type a message",
+                      border: OutlineInputBorder(),
+                    ),
+                    onSubmitted: (_) => sendMessage(),
                   ),
                 ),
+                const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.send),
                   onPressed: sendMessage,
-                  color: Colors.green,
+                  color: Colors.blueAccent,
                 ),
               ],
             ),

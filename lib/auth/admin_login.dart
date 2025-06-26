@@ -1,8 +1,8 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:animate_do/animate_do.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../dashboard/admin_dashboard.dart'; // তোমার অ্যাডমিন ড্যাশবোর্ড ফাইলের পাথ ঠিক করো
 
+import '../dashboard/admin_dashboard.dart';
 import 'auth_service (1).dart';
 
 class AdminLoginScreen extends StatefulWidget {
@@ -18,38 +18,34 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
   bool _isLoading = false;
 
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
-
   void _login() async {
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
-    User? user = await AuthService().loginUserWithEmailAndPassword(
+    final user = await AuthService().loginUserWithEmailAndPassword(
       emailController.text.trim(),
       passwordController.text.trim(),
     );
 
-    setState(() {
-      _isLoading = false;
-    });
+    setState(() => _isLoading = false);
 
-    if (user != null && mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const AdminDashboard()),
-      );
-    } else {
-      if (mounted) {
+    if (user != null) {
+      final role = await AuthService().getUserRole(user.uid);
+
+      if (role == 'admin' && user.email == 'admin@gmail.com') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const AdminDashboard()),
+        );
+      } else {
+        await FirebaseAuth.instance.signOut();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login failed. Check credentials.')),
+          const SnackBar(content: Text("Unauthorized access. Admin only.")),
         );
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Login failed. Check credentials.')),
+      );
     }
   }
 
@@ -63,7 +59,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // Animated background
+            // Animated Background
             SizedBox(
               height: 400,
               child: Stack(
@@ -104,9 +100,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
               ),
             ),
 
-            // Sign In Form
+            // Form Section
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -121,7 +117,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   FadeInUp(
                     duration: const Duration(milliseconds: 1700),
                     child: Container(
@@ -153,7 +149,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: "Email",
+                                hintText: "Admin Email",
                                 hintStyle: TextStyle(
                                   color: Colors.grey.shade700,
                                 ),
@@ -178,7 +174,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   FadeInUp(
                     duration: const Duration(milliseconds: 1900),
                     child: MaterialButton(
@@ -191,27 +187,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       child: _isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
                           : const Text(
-                              "Sign In",
+                              "Login as Admin",
                               style: TextStyle(color: Colors.white),
                             ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  // যদি অ্যাডমিন সাইনআপ অপশন দিতে চাও, তখন এই অংশ আনকমেন্ট করো
-                  FadeInUp(
-                    duration: const Duration(milliseconds: 2000),
-                    child: Center(
-                      child: TextButton(
-                        onPressed: () {
-                          // Navigator.push(context, MaterialPageRoute(builder: (_) => AdminSignupScreen()));
-                        },
-                        child: const Text(
-                          "Don't have an account? Sign Up",
-                          style: TextStyle(
-                            color: Color.fromRGBO(49, 39, 79, .6),
-                          ),
-                        ),
-                      ),
                     ),
                   ),
                 ],

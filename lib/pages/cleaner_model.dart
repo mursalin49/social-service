@@ -1,4 +1,5 @@
 class Cleaner {
+  final String uid;
   final String name;
   final String phone;
   final String location;
@@ -6,6 +7,7 @@ class Cleaner {
   final String image;
 
   Cleaner({
+    required this.uid,
     required this.name,
     required this.phone,
     required this.location,
@@ -13,8 +15,9 @@ class Cleaner {
     required this.image,
   });
 
-  factory Cleaner.fromJson(Map<dynamic, dynamic> json) {
+  factory Cleaner.fromJson(Map<String, dynamic> json) {
     return Cleaner(
+      uid: json['uid'] ?? '',
       name: json['name'] ?? '',
       phone: json['phone'] ?? '',
       location: json['location'] ?? '',

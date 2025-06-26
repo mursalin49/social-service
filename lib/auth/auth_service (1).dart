@@ -1,110 +1,110 @@
+// import 'dart:developer';
+//
+// import 'package:firebase_auth/firebase_auth.dart';
+//
+// class AuthService {
+//   final _auth = FirebaseAuth.instance;
+//
+//   Future<User?> createUserWithEmailAndPassword(
+//       String email, String password) async {
+//     try {
+//       final cred = await _auth.createUserWithEmailAndPassword(
+//           email: email, password: password);
+//       return cred.user;
+//     } catch (e) {
+//       log("Something went wrong");
+//     }
+//     return null;
+//   }
+//
+//   Future<User?> loginUserWithEmailAndPassword(
+//       String email, String password) async {
+//     try {
+//       final cred = await _auth.signInWithEmailAndPassword(
+//           email: email, password: password);
+//       return cred.user;
+//     } catch (e) {
+//       log("Something went wrong");
+//     }
+//     return null;
+//   }
+//
+//   Future<void> signout() async {
+//     try {
+//       await _auth.signOut();
+//     } catch (e) {
+//       log("Something went wrong");
+//     }
+//   }
+// }
 import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class AuthService {
-  final _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
 
+  // ✅ User Create with Role
   Future<User?> createUserWithEmailAndPassword(
-      String email, String password) async {
+      String email, String password, String name, String role) async {
     try {
       final cred = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      return cred.user;
+        email: email,
+        password: password,
+      );
+
+      if (cred.user != null) {
+        // ✅ Store user data in Realtime Database with role
+        await _dbRef.child("users").child(cred.user!.uid).set({
+          "uid": cred.user!.uid,
+          "name": name,
+          "email": email,
+          "role": role, // user, provider, admin
+        });
+        return cred.user;
+      }
     } catch (e) {
-      log("Something went wrong");
+      log("Signup Error: $e");
     }
     return null;
   }
 
+  // ✅ Login Function (Role Check Optional)
   Future<User?> loginUserWithEmailAndPassword(
       String email, String password) async {
     try {
       final cred = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+        email: email,
+        password: password,
+      );
       return cred.user;
     } catch (e) {
-      log("Something went wrong");
+      log("Login Error: $e");
     }
     return null;
   }
 
+  // ✅ Get Current User Role
+  Future<String?> getUserRole(String uid) async {
+    try {
+      final snapshot =
+          await _dbRef.child("users").child(uid).child("role").get();
+      if (snapshot.exists) {
+        return snapshot.value.toString();
+      }
+    } catch (e) {
+      log("Get Role Error: $e");
+    }
+    return null;
+  }
+
+  // ✅ Sign Out
   Future<void> signout() async {
     try {
       await _auth.signOut();
     } catch (e) {
-      log("Something went wrong");
+      log("Signout Error: $e");
     }
   }
 }
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_database/firebase_database.dart';
-//
-// class AuthService {
-//   final FirebaseAuth _auth = FirebaseAuth.instance;
-//   final DatabaseReference _dbRef =
-//       FirebaseDatabase.instance.ref().child('users');
-//
-//   // Signup with Email & Password and save role to Realtime Database
-//   Future<User?> signupUserWithEmailAndPassword({
-//     required String name,
-//     required String email,
-//     required String password,
-//     required String role, // 'user', 'provider', 'admin'
-//   }) async {
-//     try {
-//       UserCredential userCredential =
-//           await _auth.createUserWithEmailAndPassword(
-//         email: email,
-//         password: password,
-//       );
-//
-//       User? user = userCredential.user;
-//       if (user != null) {
-//         await _dbRef.child(user.uid).set({
-//           'name': name,
-//           'email': email,
-//           'role': role,
-//         });
-//         return user;
-//       }
-//     } catch (e) {
-//       print('Signup Error: $e');
-//     }
-//     return null;
-//   }
-//
-//   // Login with Email & Password
-//   Future<User?> loginUserWithEmailAndPassword(
-//       String email, String password) async {
-//     try {
-//       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-//         email: email,
-//         password: password,
-//       );
-//       return userCredential.user;
-//     } catch (e) {
-//       print('Login Error: $e');
-//       return null;
-//     }
-//   }
-//
-//   // Get current user role from Realtime Database
-//   Future<String?> getUserRole(String uid) async {
-//     try {
-//       final snapshot = await _dbRef.child(uid).get();
-//       if (snapshot.exists) {
-//         final data = Map<String, dynamic>.from(snapshot.value as dynamic);
-//         return data['role'] ?? null;
-//       }
-//     } catch (e) {
-//       print('Role fetch error: $e');
-//     }
-//     return null;
-//   }
-//
-//   // Sign out
-//   Future<void> signOut() async {
-//     await _auth.signOut();
-//   }
-// }
