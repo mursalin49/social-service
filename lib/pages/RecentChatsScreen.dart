@@ -36,12 +36,8 @@ class _RecentChatsScreenState extends State<RecentChatsScreen> {
 
       allChats.forEach((chatId, messagesMap) {
         if (chatId.toString().contains(currentUserId)) {
-          // chatId এ আমাদের userId আছে মানে আমাদের চ্যাট
-
-          // messagesMap একটি ম্যাপ, যার ভ্যালু গুলো মেসেজ অবজেক্ট
           Map<dynamic, dynamic> msgs = Map<dynamic, dynamic>.from(messagesMap);
 
-          // সর্বশেষ মেসেজ খুঁজে বের করা
           var lastMsgEntry = msgs.entries.reduce(
               (a, b) => a.value['timestamp'] > b.value['timestamp'] ? a : b);
           Map<String, dynamic> lastMsg =

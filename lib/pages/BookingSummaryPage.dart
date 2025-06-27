@@ -1,4 +1,3 @@
-//
 // import 'package:flutter/material.dart';
 // import 'package:firebase_database/firebase_database.dart';
 // import 'package:printing/printing.dart';
@@ -13,7 +12,7 @@
 //   final String date;
 //   final String time;
 //   final String status;
-//   final String? cancelReason; // Nullable cancel reason added
+//   final String? cancelReason;
 //
 //   const BookingSummaryPage({
 //     super.key,
@@ -40,16 +39,16 @@
 //     bool? confirm = await showDialog<bool>(
 //       context: context,
 //       builder: (context) => AlertDialog(
-//         title: const Text('Confirm Cancel'),
+//         title: const Text('Cancel Booking?'),
 //         content: Column(
 //           mainAxisSize: MainAxisSize.min,
 //           children: [
-//             const Text('Are you sure you want to cancel this booking?'),
+//             const Text('Please provide a reason for cancellation:'),
 //             const SizedBox(height: 10),
 //             TextField(
 //               controller: reasonController,
 //               decoration: const InputDecoration(
-//                 labelText: 'Reason for cancellation',
+//                 hintText: 'Reason...',
 //                 border: OutlineInputBorder(),
 //               ),
 //               maxLines: 2,
@@ -58,13 +57,11 @@
 //         ),
 //         actions: [
 //           TextButton(
-//             onPressed: () => Navigator.pop(context, false),
-//             child: const Text('No'),
-//           ),
+//               child: const Text('No'),
+//               onPressed: () => Navigator.pop(context, false)),
 //           TextButton(
-//             onPressed: () => Navigator.pop(context, true),
-//             child: const Text('Yes'),
-//           ),
+//               child: const Text('Yes'),
+//               onPressed: () => Navigator.pop(context, true)),
 //         ],
 //       ),
 //     );
@@ -72,20 +69,22 @@
 //     if (confirm == true) {
 //       if (reasonController.text.trim().isEmpty) {
 //         ScaffoldMessenger.of(context).showSnackBar(
-//           const SnackBar(
-//               content: Text('Please provide a cancellation reason.')),
+//           const SnackBar(content: Text('Please write a reason.')),
 //         );
 //         return;
 //       }
+//
 //       await _dbRef.child('bookings').child(widget.bookingId).update({
 //         'status': 'cancelled',
 //         'cancelReason': reasonController.text.trim(),
 //         'cancelledAt': DateTime.now().toIso8601String(),
 //       });
+//
 //       ScaffoldMessenger.of(context).showSnackBar(
 //         const SnackBar(content: Text('Booking cancelled successfully')),
 //       );
-//       setState(() {});
+//
+//       setState(() {}); // To refresh status
 //     }
 //   }
 //
@@ -96,8 +95,9 @@
 //       'rating': rating,
 //       'timestamp': DateTime.now().millisecondsSinceEpoch,
 //     });
+//
 //     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text('Thanks for your rating!')),
+//       const SnackBar(content: Text('Thanks for your feedback!')),
 //     );
 //   }
 //
@@ -127,78 +127,153 @@
 //       ),
 //     );
 //
-//     await Printing.layoutPdf(
-//       onLayout: (format) async => pdf.save(),
+//     await Printing.layoutPdf(onLayout: (format) async => pdf.save());
+//   }
+//
+//   void _showHelpDialog() {
+//     showDialog(
+//       context: context,
+//       builder: (_) => AlertDialog(
+//         title: const Text('📞 Help Center'),
+//         content: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           children: const [
+//             ListTile(
+//               leading: Icon(Icons.phone),
+//               title: Text('Helpline'),
+//               subtitle: Text('+880123456789'),
+//             ),
+//             ListTile(
+//               leading: Icon(Icons.email),
+//               title: Text('Email'),
+//               subtitle: Text('support@yourapp.com'),
+//             ),
+//           ],
+//         ),
+//         actions: [
+//           TextButton(
+//             child: const Text('Close'),
+//             onPressed: () => Navigator.pop(context),
+//           ),
+//         ],
+//       ),
 //     );
 //   }
 //
 //   @override
 //   Widget build(BuildContext context) {
+//     final isCancelled = widget.status == 'cancelled';
+//
 //     return Scaffold(
-//       appBar: AppBar(title: const Text('Booking Summary')),
+//       appBar: AppBar(
+//         title: const Text('Booking Summary'),
+//         backgroundColor: isCancelled ? Colors.redAccent : Colors.black12,
+//         actions: [
+//           IconButton(
+//             icon: const Icon(Icons.help_outline),
+//             tooltip: 'Help Center',
+//             onPressed: _showHelpDialog,
+//           )
+//         ],
+//       ),
 //       body: Padding(
 //         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Text('Provider: ${widget.providerName}',
-//                 style: const TextStyle(fontSize: 18)),
-//             Text('Date: ${widget.date}'),
-//             Text('Time: ${widget.time}'),
-//             Text('Status: ${widget.status}',
-//                 style: TextStyle(
-//                     color: widget.status == 'cancelled'
-//                         ? Colors.red
-//                         : Colors.blueAccent)),
-//             if (widget.status == 'cancelled' && widget.cancelReason != null)
-//               Padding(
-//                 padding: const EdgeInsets.only(top: 8.0),
-//                 child: Text('Cancellation Reason: ${widget.cancelReason}',
-//                     style: const TextStyle(color: Colors.redAccent)),
-//               ),
-//             const SizedBox(height: 20),
-//             ElevatedButton(
-//               onPressed: () {
-//                 Navigator.push(
-//                   context,
-//                   MaterialPageRoute(
-//                     builder: (_) => ChatScreen(
-//                       receiverId: widget.providerId,
-//                       receiverName: widget.providerName,
+//         child: Card(
+//           elevation: 6,
+//           shape:
+//               RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+//           child: Padding(
+//             padding: const EdgeInsets.all(20.0),
+//             child: ListView(
+//               children: [
+//                 Text(widget.providerName,
+//                     style: const TextStyle(
+//                         fontSize: 22, fontWeight: FontWeight.bold)),
+//                 const SizedBox(height: 10),
+//                 buildInfoRow("Date", widget.date),
+//                 buildInfoRow("Time", widget.time),
+//                 buildInfoRow("Status", widget.status,
+//                     color: isCancelled ? Colors.red : Colors.green),
+//                 if (isCancelled && widget.cancelReason != null)
+//                   Padding(
+//                     padding: const EdgeInsets.only(top: 10),
+//                     child: Text("❌ Reason: ${widget.cancelReason!}",
+//                         style: const TextStyle(color: Colors.redAccent)),
+//                   ),
+//                 const Divider(height: 30),
+//                 ElevatedButton.icon(
+//                   onPressed: () {
+//                     Navigator.push(
+//                       context,
+//                       MaterialPageRoute(
+//                         builder: (_) => ChatScreen(
+//                           receiverId: widget.providerId,
+//                           receiverName: widget.providerName,
+//                         ),
+//                       ),
+//                     );
+//                   },
+//                   icon: const Icon(Icons.message),
+//                   label: const Text('Message Provider'),
+//                   style: ElevatedButton.styleFrom(
+//                     backgroundColor: Colors.grey.shade300,
+//                     shape: RoundedRectangleBorder(
+//                         borderRadius: BorderRadius.circular(10)),
+//                   ),
+//                 ),
+//                 const SizedBox(height: 10),
+//                 if (!isCancelled)
+//                   ElevatedButton.icon(
+//                     onPressed: _showCancelConfirmation,
+//                     icon: const Icon(Icons.cancel),
+//                     label: const Text('Cancel Booking'),
+//                     style: ElevatedButton.styleFrom(
+//                       backgroundColor: Colors.redAccent,
+//                       shape: RoundedRectangleBorder(
+//                           borderRadius: BorderRadius.circular(10)),
 //                     ),
 //                   ),
-//                 );
-//               },
-//               child: const Text('Message Provider'),
+//                 const SizedBox(height: 30),
+//                 const Text('Rate Provider:',
+//                     style: TextStyle(fontWeight: FontWeight.bold)),
+//                 Row(
+//                   children: List.generate(5, (index) {
+//                     return IconButton(
+//                       icon: Icon(Icons.star_border, color: Colors.orange[400]),
+//                       onPressed: () => rateProvider(index + 1),
+//                     );
+//                   }),
+//                 ),
+//                 const SizedBox(height: 20),
+//                 ElevatedButton.icon(
+//                   onPressed: generateInvoice,
+//                   icon: const Icon(Icons.picture_as_pdf),
+//                   label: const Text("Download Invoice"),
+//                   style: ElevatedButton.styleFrom(
+//                     backgroundColor: Colors.grey.shade300,
+//                     shape: RoundedRectangleBorder(
+//                         borderRadius: BorderRadius.circular(10)),
+//                   ),
+//                 ),
+//               ],
 //             ),
-//             const SizedBox(height: 10),
-//             if (widget.status != 'cancelled')
-//               ElevatedButton(
-//                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-//                 onPressed: _showCancelConfirmation,
-//                 child: const Text('Cancel Booking'),
-//               ),
-//             const SizedBox(height: 30),
-//             const Text('Rate Provider:'),
-//             Row(
-//               children: List.generate(5, (index) {
-//                 return IconButton(
-//                   icon: const Icon(Icons.star_border),
-//                   onPressed: () => rateProvider(index + 1),
-//                 );
-//               }),
-//             ),
-//             const SizedBox(height: 20),
-//             ElevatedButton.icon(
-//               icon: const Icon(Icons.download),
-//               label: const Text("Download "),
-//               style: ElevatedButton.styleFrom(
-//                 backgroundColor: Colors.black12,
-//               ),
-//               onPressed: generateInvoice,
-//             ),
-//           ],
+//           ),
 //         ),
+//       ),
+//     );
+//   }
+//
+//   Widget buildInfoRow(String title, String value, {Color? color}) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 4.0),
+//       child: Row(
+//         children: [
+//           Text("$title: ",
+//               style:
+//                   const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+//           Text(value,
+//               style: TextStyle(fontSize: 16, color: color ?? Colors.black87)),
+//         ],
 //       ),
 //     );
 //   }
@@ -289,7 +364,7 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
         const SnackBar(content: Text('Booking cancelled successfully')),
       );
 
-      setState(() {}); // To refresh status
+      setState(() {});
     }
   }
 
@@ -335,6 +410,36 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
     await Printing.layoutPdf(onLayout: (format) async => pdf.save());
   }
 
+  void _showHelpDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('📞 Help Center'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            ListTile(
+              leading: Icon(Icons.phone, color: Colors.green),
+              title: Text('Support Number'),
+              subtitle: Text('+880 1234-567890'),
+            ),
+            ListTile(
+              leading: Icon(Icons.email, color: Colors.blue),
+              title: Text('Support Email'),
+              subtitle: Text('support@serviceapp.com'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            child: const Text('Close'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isCancelled = widget.status == 'cancelled';
@@ -343,6 +448,14 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
       appBar: AppBar(
         title: const Text('Booking Summary'),
         backgroundColor: isCancelled ? Colors.redAccent : Colors.deepPurple,
+        actions: [
+          TextButton.icon(
+            onPressed: _showHelpDialog,
+            icon: const Icon(Icons.help_outline, color: Colors.white),
+            label: const Text('Help Center',
+                style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -419,6 +532,28 @@ class _BookingSummaryPageState extends State<BookingSummaryPage> {
                   label: const Text("Download Invoice"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey.shade300,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ChatScreen(
+                          receiverId: 'Io3HRqQlq0bv37R0DNl00MsVr4r2',
+                          receiverName: 'Admin Support',
+                        ),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.support_agent),
+                  label: const Text("Contact Admin"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurple,
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
