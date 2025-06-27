@@ -3,7 +3,8 @@ import 'package:animate_do/animate_do.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../dashboard/admin_dashboard.dart';
-import 'auth_service (1).dart';
+import '../auth/auth_service (1).dart';
+import '../pages/AdminDashboardScreen.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -21,22 +22,31 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   void _login() async {
     setState(() => _isLoading = true);
 
-    final user = await AuthService().loginUserWithEmailAndPassword(
-      emailController.text.trim(),
-      passwordController.text.trim(),
-    );
+    final emailInput = emailController.text.trim();
+    final passwordInput = passwordController.text.trim();
+
+    final user = await AuthService()
+        .loginUserWithEmailAndPassword(emailInput, passwordInput);
 
     setState(() => _isLoading = false);
 
     if (user != null) {
       final role = await AuthService().getUserRole(user.uid);
 
-      if (role == 'admin' && user.email == 'admin@gmail.com') {
+      debugPrint("User email from FirebaseAuth: ${user.email}");
+      debugPrint("User role from DB: $role");
+
+      // role and email check with trimming and case insensitive comparison
+      if (role != null &&
+          role.trim().toLowerCase() == 'admin' &&
+          user.email != null &&
+          user.email!.trim().toLowerCase() == 'admin@gmail.com') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const AdminDashboard()),
+          MaterialPageRoute(builder: (_) => const AdminDashboardScreen()),
         );
       } else {
+        // Sign out if not admin
         await FirebaseAuth.instance.signOut();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Unauthorized access. Admin only.")),
@@ -59,7 +69,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // Animated Background
+            // Background images section
             SizedBox(
               height: 400,
               child: Stack(
@@ -100,7 +110,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
               ),
             ),
 
-            // Form Section
+            // Login Form
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
