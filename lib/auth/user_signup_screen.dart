@@ -4,7 +4,15 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'auth_service (1).dart';
+
 import 'user_login_screen.dart';
+
+bool isStrongPassword(String password) {
+  final regex = RegExp(
+    r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$',
+  );
+  return regex.hasMatch(password);
+}
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -21,7 +29,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  String selectedRole = "user"; // Default role
+  final String selectedRole = "user";
   bool _isLoading = false;
 
   @override
@@ -33,40 +41,45 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void _signup() async {
-    if (nameController.text.isEmpty ||
-        emailController.text.isEmpty ||
-        passwordController.text.isEmpty) {
+    String name = nameController.text.trim();
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill all fields')),
       );
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    if (!isStrongPassword(password)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Password must be at least 8 characters,\ninclude upper, lower, number & symbol.'),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
 
     final user = await _auth.createUserWithEmailAndPassword(
-      emailController.text.trim(),
-      passwordController.text.trim(),
-      nameController.text.trim(),
-      'user', // অথবা 'provider', role হিসেবে যেটা assign করতে চাও
+      email,
+      password,
+      name,
+      selectedRole,
     );
 
-    setState(() {
-      _isLoading = false;
-    });
+    setState(() => _isLoading = false);
 
     if (user != null) {
-      // ✅ Store user info with role
       await _dbRef.child("users/${user.uid}").set({
         "uid": user.uid,
-        "name": nameController.text.trim(),
-        "email": emailController.text.trim(),
+        "name": name,
+        "email": email,
         "role": selectedRole,
       });
-
-      log("User Created Successfully");
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Signup successful!')),
@@ -175,32 +188,17 @@ class _SignupScreenState extends State<SignupScreen> {
                           _buildTextField(emailController, "Email", false),
                           _buildTextField(passwordController, "Password", true),
 
-                          // Role Selection
+                          // 👉 Password Hint Text
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            child: DropdownButtonFormField<String>(
-                              value: selectedRole,
-                              items: const [
-                                DropdownMenuItem(
-                                    value: 'user', child: Text('User')),
-                                DropdownMenuItem(
-                                    value: 'provider', child: Text('Provider')),
-                                // Admin signup usually not shown
-                              ],
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedRole = value!;
-                                });
-                              },
-                              decoration: InputDecoration(
-                                labelText: "Select Role",
-                                labelStyle:
-                                    TextStyle(color: Colors.grey.shade700),
-                                border: InputBorder.none,
-                              ),
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Text(
+                              "Password must be 8+ chars with A-Z, a-z, 0-9 & symbol",
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.grey.shade600),
                             ),
                           ),
+
+                          // 👉 Role Dropdown REMOVED here
                         ],
                       ),
                     ),

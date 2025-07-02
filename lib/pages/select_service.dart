@@ -177,7 +177,7 @@ class _SelectServiceState extends State<SelectService> {
                     nextPage = const CaretakerPage();
                     break;
                   case 'Cooker':
-                    nextPage = const CookPage();
+                    nextPage = const CookerPage();
                     break;
                   default:
                     nextPage = CleaningPage(); // Default fallback

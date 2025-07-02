@@ -45,37 +45,30 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
       final roleSnapshot = await _dbRef.child("users/${user.uid}/role").get();
       final role = roleSnapshot.value.toString();
 
-      // ✅ Admin Check (Fixed Gmail)
       if (role == 'admin') {
+        // Admin এর ক্ষেত্রে email ভেরিফাই করতে পারো, security এর জন্য
         if (user.email == 'admin@example.com') {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (_) => const AdminDashboard()));
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const AdminDashboard()),
+          );
         } else {
           await AuthService().signout();
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Unauthorized admin login."),
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Unauthorized admin login.")),
+          );
         }
-      }
-
-      // ✅ User
-      else if (role == 'user') {
+      } else if (role == 'user') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const UserDashboard()),
         );
-      }
-
-      // ✅ Provider
-      else if (role == 'provider') {
+      } else if (role == 'provider') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const ProviderDashboard()),
         );
-      }
-
-      // ❌ Invalid Role
-      else {
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Invalid role or account issue.")),
         );
